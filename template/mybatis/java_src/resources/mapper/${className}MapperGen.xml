@@ -1,0 +1,168 @@
+<#include "/macro.include"/>
+<#assign className = table.className>
+<#assign classNameFirstLower = table.classNameFirstLower>
+<#assign idColumnNameFirstLower = table.idColumn.columnName?uncap_first>
+<#macro mapperEl value>${r"#{"}${value}}</#macro>
+<#macro namespace>${className}.</#macro>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="${basepackage}.mapper.${className}MapperGen">
+<!-- ===========================================代码生成开始============================================ -->
+	<!-- 暂时不用缓存 <cache/> -->
+
+    <resultMap id="${className}ModelResultMap" type="${basepackage}.model.${className}Model">
+        <#list table.columns as column>
+        <result property="${column.columnNameLower}" column="${column.sqlName}"/>
+        </#list>
+    </resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="${classNameFirstLower}Columns">
+		<#list table.columns as column>
+			${table.sqlName}.${column.sqlName}<#if column_has_next>,</#if>
+		</#list>
+	</sql>
+
+	<sql id="${classNameFirstLower}Values">
+	 	<#list table.columns as column>
+	 		<#switch column.sqlName>
+	 			<#case "deleted">
+                    FALSE<#if column_has_next>,</#if>
+                    <#break>
+	 			<#case "version">
+                    0<#if column_has_next>,</#if>
+  				    <#break>
+  				<#default>
+                    ${r"#{"}${column.columnNameLower}}<#if column_has_next>,</#if>
+    			<#break>
+	 		</#switch>
+	 	</#list>
+    </sql>
+
+    <sql id="${classNameFirstLower}ValuesBatch">
+        <#list table.columns as column>
+            <#switch column.sqlName>
+                <#case "deleted">
+                    FALSE<#if column_has_next>,</#if>
+                    <#break>
+                <#case "version">
+                    0<#if column_has_next>,</#if>
+                    <#break>
+                <#default>
+                    ${r"#{"}item.${column.columnNameLower}}<#if column_has_next>,</#if>
+                <#break>
+            </#switch>
+        </#list>
+    </sql>
+
+    <sql id="${classNameFirstLower}Sets">
+        <#list table.columns as column>
+        	<#switch column.sqlName>
+	 			<#case "version">
+                	`version`=`version`+1<#if column_has_next>,</#if>
+  				<#break>
+  				<#default>
+    			<if test="${column.columnNameLower} != null">${column.sqlName}=<@mapperEl column.columnNameLower/><#if column_has_next>,</#if></if>
+    			<#break>
+	 		</#switch>
+    	</#list>
+    </sql>
+
+    <sql id="${classNameFirstLower}Wheres">
+        ${table.sqlName}.`deleted`=FALSE
+        <#list table.columns as column>
+        	<#if column.sqlName!="deleted">
+        <!-- ${column.sqlName} 开始 -->
+        <if test="EQ_${column.columnNameLower} !=null <#if !column.isNumberColumn>and EQ_${column.columnNameLower} !=''</#if>">
+            AND ${table.sqlName}.${column.sqlName} = ${r"#{EQ_"}${column.columnNameLower}}
+        </if>
+        <if test="NEQ_${column.columnNameLower} !=null <#if !column.isNumberColumn>and NEQ_${column.columnNameLower} !=''</#if>">
+            AND ${table.sqlName}.${column.sqlName} != ${r"#{NEQ_"}${column.columnNameLower}}
+        </if>
+        <if test="LIKE_${column.columnNameLower} !=null <#if !column.isNumberColumn>and LIKE_${column.columnNameLower} !=''</#if>">
+            AND ${table.sqlName}.${column.sqlName} like CONCAT('%',${r"#{LIKE_"}${column.columnNameLower}},'%')
+        </if>
+        <if test="LIKEP_${column.columnNameLower} !=null <#if !column.isNumberColumn>and LIKEP_${column.columnNameLower} !=''</#if>">
+            AND ${table.sqlName}.${column.sqlName} like CONCAT(${r"#{LIKEP_"}${column.columnNameLower}},'%')
+        </if>
+        <if test="PLIKE_${column.columnNameLower} !=null <#if !column.isNumberColumn>and PLIKE_${column.columnNameLower} !=''</#if>">
+            AND ${table.sqlName}.${column.sqlName} like CONCAT('%',${r"#{PLIKE_"}${column.columnNameLower}})
+        </if>
+        <if test="GT_${column.columnNameLower} !=null <#if !column.isNumberColumn>and GT_${column.columnNameLower} !=''</#if>">
+            AND ${table.sqlName}.${column.sqlName} > ${r"#{GT_"}${column.columnNameLower}}
+        </if>
+        <if test="LT_${column.columnNameLower} !=null <#if !column.isNumberColumn>and LT_${column.columnNameLower} !=''</#if>">
+            AND ${table.sqlName}.${column.sqlName} &lt; ${r"#{LT_"}${column.columnNameLower}}
+        </if>
+        <if test="GTE_${column.columnNameLower} !=null <#if !column.isNumberColumn>and GTE_${column.columnNameLower} !=''</#if>">
+            AND ${table.sqlName}.${column.sqlName} >= ${r"#{GTE_"}${column.columnNameLower}}
+        </if>
+        <if test="LTE_${column.columnNameLower} !=null <#if !column.isNumberColumn>and LTE_${column.columnNameLower} !=''</#if>">
+            AND ${table.sqlName}.${column.sqlName} &lt;= ${r"#{LTE_"}${column.columnNameLower}}
+        </if>
+        <if test="IN_${column.columnNameLower} !=null and !IN_${column.columnNameLower}.isEmpty">
+            AND ${table.sqlName}.${column.sqlName} IN
+            <foreach item="item" index="index" collection="IN_${column.columnNameLower}"
+                     open="(" separator="," close=")">
+                ${r"#{"}item}
+            </foreach>
+        </if>
+        <if test="NIN_${column.columnNameLower} !=null and !NIN_${column.columnNameLower}.isEmpty">
+            AND ${table.sqlName}.${column.sqlName} NOT IN
+            <foreach item="item" index="index" collection="NIN_${column.columnNameLower}"
+                     open="(" separator="," close=")">
+               ${r"#{"}item}
+            </foreach>
+        </if>
+        <!-- ${column.sqlName} 结束 -->
+        	</#if>
+		</#list>
+    </sql>
+
+	<select id="get${className}" resultType="${basepackage}.model.${className}Model">
+		SELECT
+        <include refid="${classNameFirstLower}Columns"></include>
+        FROM ${table.sqlName}
+        WHERE  ${table.sqlName}.`deleted`=FALSE AND ${idColumnNameFirstLower} = <@mapperEl idColumnNameFirstLower/>
+    </select>
+
+    <insert id="insert${className}" parameterType="${basepackage}.model.${className}Model">
+        INSERT INTO ${table.sqlName}
+        (<include refid="${classNameFirstLower}Columns"></include>)
+        VALUES
+        (<include refid="${classNameFirstLower}Values"></include>)
+    </insert>
+
+    <insert id="insert${className}Batch" parameterType="java.util.List">
+      INSERT INTO ${table.sqlName}
+        (<include refid="${classNameFirstLower}Columns"></include>)
+        VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (<include refid="${classNameFirstLower}ValuesBatch"></include>)
+        </foreach>
+    </insert>
+
+    <select id="get${className}List" resultType="${basepackage}.model.${className}Model">
+        SELECT
+        <include refid="${classNameFirstLower}Columns"></include>
+        FROM
+        ${table.sqlName}
+        <where>
+            <include refid="${classNameFirstLower}Wheres"></include>
+        </where>
+    </select>
+
+    <update id="update${className}" parameterType="${basepackage}.model.${className}Model">
+        UPDATE ${table.sqlName}
+        <set>
+            <include refid="${classNameFirstLower}Sets"></include>
+        </set>
+        WHERE ${idColumnNameFirstLower} = <@mapperEl idColumnNameFirstLower/>
+        <if test="version != null">and `version`= ${r"#{"}version}</if>
+    </update>
+
+    <!-- ===========================================代码生成结束============================================ -->
+</mapper>

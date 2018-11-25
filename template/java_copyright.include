@@ -1,5 +1,7 @@
 /*
- * Copyright(c) 2016 cncounter.com All rights reserved.
- * distributed with this file and available online at
- * http://www.cncounter.com/
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 <#if now??>- ${now?string('yyyy')}</#if>
  */
+
